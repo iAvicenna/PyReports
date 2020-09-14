@@ -6,7 +6,7 @@ Created on Sun Aug 16 20:03:19 2020
 @author: avicenna
 """
 import base64
-from PIL import Image as PImage, ImageFont
+from PIL import Image, ImageFont
 import matplotlib
 import io
 import importlib
@@ -20,17 +20,17 @@ def fig2img(fig):
     buf = io.BytesIO()
     fig.savefig(buf)
     buf.seek(0)
-    img = PImage.open(buf)
+    img = Image.open(buf)
     return img
 
-def image_to_byte_array(image:PImage):
+def image_to_byte_array(image:Image):
     """Convert an Image to byte like array without saving to disk"""
     imgByteArr = io.BytesIO()
     image.save(imgByteArr, format=image.format)
     imgByteArr = imgByteArr.getvalue()
     return imgByteArr
 
-class Text:
+class ReportText:
 
     """Text object: Can define font size and alignment of text with inputs.
     _to_html generates a string which defines the html code that will display the
@@ -52,7 +52,7 @@ class Text:
 
         return ['\t<p style = "font-size:' + str(self.font_size) + 'px; ' + 'text-align:' + self.alignment + '" >','\t\t' + self.text,'\t</p>\n']
 
-class Image:
+class ReportImage:
 
     """Image object: It can either accept a str as image input which should be the
     path of the saved image, or a matplot lib figure object. If width and height
@@ -95,7 +95,7 @@ class Image:
                 img_bytes = open(self.image, 'rb').read()
 
                 if self.width is None and self.height is None:
-                    pimage = PImage.open(self.image)
+                    pimage = Image.open(self.image)
                     width, height = pimage.size
 
             elif isinstance(self.image, matplotlib.figure.Figure):
@@ -119,7 +119,7 @@ class Image:
 
         return img_html
 
-class List:
+class ReportList:
 
     def __init__(self, objects, is_ordered= False):
 
@@ -149,7 +149,7 @@ class List:
 
         return list_html
 
-class Link:
+class ReportLink:
 
     def __init__(self, link_url, link_name=None):
 
@@ -169,8 +169,7 @@ class Link:
         return ['\t<a href="' + self.link_url + '">' + self.link_name + '</a>\n']
 
 
-
-class Section:
+class ReportSection:
 
     '''Section object can be created independently of the report and added to a
     report object. section_no is used to format the html file with section comment
@@ -221,19 +220,19 @@ class Section:
     def add_list(self, objects, is_ordered=False, end='<br>'):
         assert isinstance(end,str), 'end should be a str but is {}'.format(type(end))
 
-        self.section_contents += List(objects, is_ordered = is_ordered)._to_html()
+        self.section_contents += ReportList(objects, is_ordered = is_ordered)._to_html()
         self.section_contents += ['\t' + end + '\n']
 
     def add_link(self, link_url, link_name, end='<br>'):
         assert isinstance(end,str), 'end should be a str but is {}'.format(type(end))
 
-        self.section_contents += Link(link_url, link_name = link_name)._to_html()
+        self.section_contents += ReportLink(link_url, link_name = link_name)._to_html()
         self.section_contents += ['\t' + end + '\n']
 
     def add_text(self, text, font_size=16, alignment='left', end='<br>'):
         assert isinstance(end,str), 'end should be a str but is {}'.format(type(end))
 
-        self.section_contents += Text(text, font_size=font_size, alignment=alignment)._to_html()
+        self.section_contents += ReportText(text, font_size=font_size, alignment=alignment)._to_html()
         self.section_contents += ['\t' + end + '\n']
 
     def add_brakes(self, number_of_brakes):
@@ -282,7 +281,7 @@ class Section:
 
         for ind,image in enumerate(images):
             if isinstance(image,str):
-                pimage = PImage.open(image)
+                pimage = Image.open(image)
                 image_width, image_height = pimage.size
                 widths.append(int(scales[ind] * image_width))
                 font_size = font.getsize(captions[ind])
@@ -312,7 +311,7 @@ class Section:
             else:
                 alignment='left'
 
-            self.section_contents += ['\t' + x for x in Image(image, widths[ind], heights[ind], alignment=alignment, caption=captions[ind])._to_html()]
+            self.section_contents += ['\t' + x for x in ReportImage(image, widths[ind], heights[ind], alignment=alignment, caption=captions[ind])._to_html()]
 
         self.section_contents += ['\t</div>\n']
         self.section_contents += [end + '\n']
