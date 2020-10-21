@@ -261,7 +261,7 @@ class ReportSection:
         heights = []
 
         if captions is None:
-            captions = [None]*len(images)
+            captions = ['']*len(images)
         if not isinstance(images, list):
             images = [images]
         if not isinstance(captions, list):
@@ -296,7 +296,7 @@ class ReportSection:
                 div_widths.append(max([int(scales[ind] * image_width), 1.01*font_size[0]]))
                 heights.append(int(scales[ind] * image_height))
             else:
-                raise ValueError('Images should be either in str format or matplotlib figure format but is {} instead'.format(type(self.image)))
+                raise ValueError('Images should be either in str format or matplotlib figure format but is {} instead'.format(type(image)))
 
         self.section_contents += ['\t<div style="width:' + str(int(sum(div_widths) + len(images)*10)) + 'px"n>\n']
 
@@ -318,11 +318,10 @@ class ReportSection:
 
 
 
-    def add_multitab(self, first_tab_id, number_of_tabs, tab_titles, tab_contents, end='<br>'):
+    def add_multitab(self, first_tab_id, number_of_tabs, tab_titles, tab_contents):
 
         self.number_of_mtabs += 1
         assert number_of_tabs == len(tab_titles), 'Number of tab titles should equal number of tabs'
-        assert isinstance(end,str), 'end should be a str but is {}'.format(type(end))
         assert isinstance(tab_contents, list), 'tab_contents should be a list but is {} instead'.format(type(tab_contents))
         assert isinstance(tab_titles, list), 'tab_titles should be a list but is {} instead'.format(type(tab_titles))
 
@@ -341,7 +340,7 @@ class ReportSection:
                 self.section_contents += ['\t' + x for x in content._to_html()]
 
             self.section_contents += ['\t</div>\n']
-            self.section_contents += [end+'\n']
+            self.section_contents += ['\n']
 
     def _write_section_html(self):
 
@@ -369,13 +368,20 @@ class Report:
 
     Title can be added by add_report_title function after the object is created.
 
+    pretext: can be added by add_report_pretext. This is something that is added
+    before the title (could be such as links to homepage, or other related directories).
+
     containts_tex: If there will be tex formulas in the report then
     containts_tex should be set to True. tex rendering also requires internet
     connection (you can render as an html and print to pdf to have the tex
-    formulas permanently). Tex formulas should be encased in {$ and $}. If tex
+    formulas permanently). Tex formulas should be encased between {$ and $}. If tex
     formulas dont render in html, either there is no interenet connection
     or there is a wrong formula (try compiling the formulas in a tex editor
-    to debug it).
+    to debug it). Note that when writing tex formulas, you need to escape
+    special characters of python, for instance you need to write \\rightarrow
+    instead of \rightarrow. This tex capability is intended for short demonstrations
+    not proving long theorems. For longer tex documents you should prefer a proper
+    tex editor.
 
     styles_path and scripts_path are the paths to the html styles and scripts
     included in the module. They can be modified as long as they conform with
@@ -417,15 +423,15 @@ class Report:
         self.sections = []
         self.tab_ids = []
         self.html = ''
-
-        self.page_contents.append('<!DOCTYPE html>')
-        self.page_contents.append('<html>')
-        self.open_tags.append('</html>')
-
+        self.pretext = ''
         self.number_of_sections = 0
         self.number_of_mtabs = 0
 
+        self.page_contents.append('<!DOCTYPE html>')
+        self.page_contents.append('<html>')
         self.page_contents.append('\t<body>')
+
+        self.open_tags.append('</html>')
         self.open_tags.append('\t</body>')
 
     def add_report_title(self, title_text, color = "black"):
@@ -435,6 +441,10 @@ class Report:
         self.page_title = ['\t\t<hr class="suphr"><!--START OF REPORT-->','\t\t<h1 style = "color: {}; text-align: center">{}</h1>'.format(color, title_text)]
 
         self.page_contents = self.page_contents[0:4] + self.page_title + self.page_contents[4:]
+
+    def add_report_pretext(self, pretext):
+
+        self.pretext = pretext
 
     def _write_section(self,section):
         section._write_section_html()
@@ -453,7 +463,9 @@ class Report:
         style_html += [self.style.body_style  , self.style.hr_style, self.style.fig_style, self.style.fig_caption_style]
 
         if self.number_of_mtabs > 0:
-            style_html += [self.style.tab_style]+['\t\t</style>']
+            style_html += [self.style.tab_style]
+
+        style_html += ['\t\t</style>']
 
         #add scripts
         scripts_html = []
@@ -466,7 +478,7 @@ class Report:
             scripts_html += [self.scripts.tex_script]
 
         #add style and scripts to the contents
-        self.page_contents = self.page_contents[0:1] + style_html + scripts_html + ['\t</head>\n'] + self.page_contents[2:]
+        self.page_contents = self.page_contents[0:1] + style_html + scripts_html + ['\t</head>\n'] + [self.pretext] + self.page_contents[2:]
 
         for line in self.page_contents:
             self.html += line + '\n'
