@@ -79,7 +79,8 @@ list1 = pr.ReportList([
 
 tab_contents = [[pr.ReportImage(fig1), pr.ReportText('Donec venenatis libero a orci pellentesque mattis.')],
                 [list1, pr.ReportText('Nunc arcu est, lacinia vitae justo eget, fringilla fermentum nibh.')]]
-section2.add_multitab(0, 2, ['Tab1','Tab2'], tab_contents)
+section2.add_multitab(2, ['Tab1','Tab2'], tab_contents)
+
 
 #create new section and add some tex formulas
 section3 = pr.ReportSection(3)

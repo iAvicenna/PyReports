@@ -318,9 +318,9 @@ class ReportSection:
 
 
 
-    def add_multitab(self, first_tab_id, number_of_tabs, tab_titles, tab_contents):
+    def add_multitab(self, number_of_tabs, tab_titles, tab_contents):
 
-        self.number_of_mtabs += 1
+
         assert number_of_tabs == len(tab_titles), 'Number of tab titles should equal number of tabs'
         assert isinstance(tab_contents, list), 'tab_contents should be a list but is {} instead'.format(type(tab_contents))
         assert isinstance(tab_titles, list), 'tab_titles should be a list but is {} instead'.format(type(tab_titles))
@@ -328,12 +328,12 @@ class ReportSection:
         self.section_contents += ['\t<div class="tab">']
 
         for i in range(number_of_tabs):
-            self.section_contents += ['\t\t<button class="tablinks" onclick="open_tabs(event, \'Tab%d\')">%s</button>'%(first_tab_id + i, tab_titles[i])]
+            self.section_contents += ['\t\t<button class="tablinks" onclick="open_tabs(event, \'Tab%d\')">%s</button>'%(self.number_of_mtabs + i, tab_titles[i])]
 
         self.section_contents += ['\t</div>\n']
 
         for i in range(number_of_tabs):
-            self.section_contents += ['\t<div id="Tab%d" class="tabcontent">'%(i + first_tab_id)]
+            self.section_contents += ['\t<div id="Tab%d" class="tabcontent">'%(self.number_of_mtabs + i)]
             self.section_contents += ['\t<span onclick="this.parentElement.style.display="none"" class="topright">&times</span>']
             self.section_contents += ['\t<h3>%s</h3>'%tab_titles[i]]
             for content in tab_contents[i]:
@@ -341,6 +341,8 @@ class ReportSection:
 
             self.section_contents += ['\t</div>\n']
             self.section_contents += ['\n']
+
+        self.number_of_mtabs += number_of_tabs
 
     def _write_section_html(self):
 
