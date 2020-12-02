@@ -32,7 +32,8 @@ fig_style = '''
               margin-bottom: 0px;
               margin-right: 0px;
               margin-left: 0px;
-              padding: 5px;
+              padding-right: 150px;
+              padding=left: 50px;
               float: left;
             }
 
@@ -41,7 +42,8 @@ fig_style = '''
               margin-bottom: 0px;
               margin-right: 5px;
               margin-left: 0px;
-              padding: 5px;
+              padding-right: 150px;
+              padding=left: 50px;
               float: left;
             }
 
@@ -50,7 +52,8 @@ fig_style = '''
               margin-bottom: 0px;
               margin-right: 0px;
               margin-left: 0px;
-              padding: 5px;
+              padding-right: 150px;
+              padding=left: 50px;
               float: none;
             }
 

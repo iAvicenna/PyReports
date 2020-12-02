@@ -297,7 +297,7 @@ class ReportSection:
             else:
                 raise ValueError('Images should be either in str format or matplotlib figure format but is {} instead'.format(type(image)))
 
-        self.section_contents += ['\t<div style="width:' + str(int(sum(div_widths) + len(images)*10)) + 'px"n>\n']
+        self.section_contents += ['\t<div style="width:' + str(int(sum(div_widths) + len(images)*400)) + 'px"n>\n']
 
         for ind,image in enumerate(images):
 
@@ -310,7 +310,7 @@ class ReportSection:
             else:
                 alignment='left'
 
-            self.section_contents += ['\t' + x + '\t\t\t' for x in ReportImage(image, widths[ind], heights[ind], alignment=alignment, caption=captions[ind])._to_html() ]
+            self.section_contents += ['\t' + x for x in ReportImage(image, widths[ind], heights[ind], alignment=alignment, caption=captions[ind])._to_html()]
 
         self.section_contents += ['\t</div>\n']
         self.section_contents += [end + '\n']
