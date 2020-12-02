@@ -1,4 +1,3 @@
-#!/usr/bin/env python3
 # -*- coding: utf-8 -*-
 """
 Created on Sun Aug 16 20:03:19 2020
@@ -311,7 +310,7 @@ class ReportSection:
             else:
                 alignment='left'
 
-            self.section_contents += ['\t' + x for x in ReportImage(image, widths[ind], heights[ind], alignment=alignment, caption=captions[ind])._to_html()]
+            self.section_contents += ['\t' + x + '\t\t\t' for x in ReportImage(image, widths[ind], heights[ind], alignment=alignment, caption=captions[ind])._to_html() ]
 
         self.section_contents += ['\t</div>\n']
         self.section_contents += [end + '\n']

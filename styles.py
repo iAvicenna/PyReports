@@ -10,7 +10,12 @@ Created on Tue Aug 18 15:07:58 2020
 other_styles = '''''' #add any extra styles here
 
 body_style = '''
-            body {font-family: Arial; font-size:16px}'''
+            body {font-family: Courier New; font-size:16px}'''
+
+p_style = '''
+            p {
+              white-space: pre;
+             }'''
 
 fig_caption_style = '''
             figcaption {font-size:16px; word-wrap:break-word}
