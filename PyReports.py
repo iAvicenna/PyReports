@@ -55,13 +55,15 @@ class ReportImage:
 
     """Image object: It can either accept a str as image input which should be the
     path of the saved image, or a matplot lib figure object. If width and height
-    is not given as input, width and height of the original image is used.
+    is not given as input, width and height of the original image is used and scaled
+    by scale.
 
     If embed is True, then the image is embedded to the html document by converting
     it to bytes. In such a case you don't need to keep a copy of the figure to
     load it to the report. Text is the caption that will be displayed """
 
-    def __init__(self, image, width=None, height=None, alignment='right', embed=True, caption=None):
+    def __init__(self, image, width=None, height=None, alignment='right', embed=True,
+                 caption=None, scale=1):
 
         assert isinstance(image,str) or isinstance(image, matplotlib.figure.Figure),'Images should be either in str format or matplotlib figure format but is {} instead'.format(type(image))
         assert isinstance(embed, bool), 'embed parameter should be bool but it is {}'.format(type(embed))
@@ -70,7 +72,15 @@ class ReportImage:
         if width is not None and height is not None:
             assert int(width)==width and int(height)==height and width>0 and height>0,'Width and height should be positive integers but they are {} and {}'.format(width,height)
         else:
-            assert width is None and height is None, 'Width and height should be both initialized.'
+            if isinstance(image,str):
+                pimage = Image.open(image)
+                width, height = pimage.size
+
+            elif isinstance(image, matplotlib.figure.Figure):
+                width, height = image.get_size_inches()*image.dpi
+
+            width *= scale
+            height *= scale
 
         assert alignment in ['left','right','beforeright'], 'alignment should be left or right but it is {}'.format(alignment)
 
@@ -316,7 +326,6 @@ class ReportSection:
         self.section_contents += [end + '\n']
 
 
-
     def add_multitab(self, number_of_tabs, tab_titles, tab_contents):
 
 
@@ -327,14 +336,15 @@ class ReportSection:
         self.section_contents += ['\t<div class="tab">']
 
         for i in range(number_of_tabs):
-            self.section_contents += ['\t\t<button class="tablinks" onclick="open_tabs(event, \'Tab%d\')">%s</button>'%(self.number_of_mtabs + i, tab_titles[i])]
+            self.section_contents += ['\t\t<button class="tablinks" onclick="open_tabs(event, \'Tab%d-%d\')">%s</button>'%(self.section_no, self.number_of_mtabs + i, tab_titles[i])]
 
         self.section_contents += ['\t</div>\n']
 
         for i in range(number_of_tabs):
-            self.section_contents += ['\t<div id="Tab%d" class="tabcontent">'%(self.number_of_mtabs + i)]
+            self.section_contents += ['\t<div id="Tab%d-%d" class="tabcontent">'%(self.section_no, self.number_of_mtabs + i)]
             self.section_contents += ['\t<span onclick="this.parentElement.style.display="none"" class="topright">&times</span>']
             self.section_contents += ['\t<h3>%s</h3>'%tab_titles[i]]
+
             for content in tab_contents[i]:
                 self.section_contents += ['\t' + x for x in content._to_html()]
 
