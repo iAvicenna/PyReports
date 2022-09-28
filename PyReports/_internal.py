@@ -3,7 +3,7 @@
 """
 Created on Wed Jan 19 18:51:06 2022
 
-@author: avicenna
+@author: Sina Tureli
 """
 
 import PIL as _PIL
