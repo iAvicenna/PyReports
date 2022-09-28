@@ -5,11 +5,6 @@ Created on Mon Jan 17 13:28:59 2022
 
 @author: Sina Tureli
 
-Containers can contain other containers or objects from the objects module
-
-They must satisfy some child parent relations given in the _Node class
-found within objects module
-
 """
 
 import re as _re
