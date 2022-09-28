@@ -13,12 +13,20 @@ with report:
     Txt('This is a text')  
     Img('./image1.png') 
     
-  with Section('Results'):
+  with Section('Results', has_tex=True):
     Plt('./plotly_graph.html')
     
     with Grid(2,1):
       Img('./image1.png)
       Img('./image2.png)
+      
+    Txt('''
+    One can also put a tex formula using regular latex code
+    
+    $\int exp^{-x^2} dx = ?? $
+    
+    ''')
+    
     
   with Section('Resources')
     Cde('''
