@@ -10,7 +10,7 @@ report = Report('Test Report')
 with report:
 
   with Section('Introduction'):  
-    Txt('''This is a text''')  
+    Txt('This is a text')  
     Img('./image1.png') 
     
   with Section('Results'):
