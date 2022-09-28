@@ -21,20 +21,18 @@ with report:
       Img('./image2.png)
       
     Txt('''
-    One can also put a tex formula using regular latex code
-    
-    $\int exp^{-x^2} dx = ?? $
-    
-    ''')
+        One can also put a tex formula using regular latex code
+
+        $\int exp^{-x^2} dx = ?? $
+        ''')
     
     
   with Section('Resources')
     Cde('''
-    Here goes some code
-    which will be syntax highlighted
-    formatted
-    '''
-    )
+        Here goes some code
+        which will be syntax highlighted
+        formatted
+        ''')
     
 report.to_html('my_report.html)
     
