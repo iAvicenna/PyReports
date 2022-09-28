@@ -1,6 +1,5 @@
 # PyReports
-PyReports is a python package that allows typing up pdf reports easily and quickly.
-
+PyReports is a python library that allows typing up pdf reports easily and quickly.
 It is done via a context managing. A simple example is 
 
 ```
@@ -33,5 +32,4 @@ report.to_html('my_report.html)
     
  
 ```
-Among other things, it also allows embedding [plotly plots](https://plotly.com/) and [antigenic cartography maps](https://www.antigenic-cartography.org/).
-See the example_report.py for a much extended example.
+Among other things, it also allows embedding [plotly plots](https://plotly.com/) and [antigenic cartography maps](https://www.antigenic-cartography.org/) to your report. See the [example_report.py](https://github.com/iAvicenna/PyReports/blob/main/test/examples/example_report.py) for a much extended example.
