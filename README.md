@@ -27,7 +27,7 @@ with report:
         ''')
     
     
-  with Section('Resources')
+  with Section('Resources'):
     Cde('''
         Here goes some code
         which will be syntax highlighted
