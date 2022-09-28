@@ -6,7 +6,6 @@ It is done via a context managing. A simple example is
 ```
 from PyReports import Section, Report, Txt, Img, Plt
 
-
 report = Report('Test Report')  
 
 with report:
@@ -17,6 +16,20 @@ with report:
     
   with Section('Results'):
     Plt('./plotly_graph.html')
+    
+    with Grid(2,1):
+      Img('./image1.png)
+      Img('./image2.png)
+    
+  with Section('Resources')
+    Cde('''
+    Here goes some code
+    which will be syntax highlighted
+    formatted
+    '''
+    )
+    
+report.to_html('my_report.html)
     
  
 ```
