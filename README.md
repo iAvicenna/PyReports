@@ -29,9 +29,8 @@ with report:
     
   with Section('Resources'):
     Cde('''
-        Here goes some code
-        which will be syntax highlighted
-        formatted
+        Here goes some code which will
+        be syntax highlighted formatted
         ''')
     
 report.to_html('my_report.html)
