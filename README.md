@@ -21,7 +21,7 @@ with report:
       Img('./image2.png)
       
     Txt('''
-        One can also put a tex formula using regular latex code
+        One can also put a latex formula using regular tex code
 
         $\int exp^{-x^2} dx = ?? $
         ''')
