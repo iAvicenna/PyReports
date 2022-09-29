@@ -33,8 +33,6 @@ with report:
           as you used context manager to create section in reports.
           ''')
     
-    
-    
   with Section('Resources'):
     Cde('''
         Here goes some code which will
