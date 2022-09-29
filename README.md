@@ -16,7 +16,7 @@ with report:
   with Section('Results', has_tex=True):
     Plt('./plotly_graph.html')
     
-    with Grid(2,1,item_titles=['Image1', 'Image2']):
+    with Grid(2, 1, item_titles=['Image1', 'Image2']):
       Img('./image1.png')
       Img('./image2.png')
       
@@ -25,7 +25,8 @@ with report:
 
         $\int exp^{-x^2} dx = ?? $
         
-        Once has_tex is set to True, necessary javascripts will be added to the report`s head.
+        Once has_tex is set to True, necessary javascripts will be 
+        added to the report`s head.
         ''')
         
     with Section('Results Subsection'):
