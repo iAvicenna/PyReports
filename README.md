@@ -16,7 +16,7 @@ with report:
   with Section('Results', has_tex=True):
     Plt('./plotly_graph.html')
     
-    with Grid(2,1):
+    with Grid(2,1,item_titles=['Image1', 'Image2']):
       Img('./image1.png')
       Img('./image2.png')
       
