@@ -45,4 +45,5 @@ report.to_html('my_report.html)
     
  
 ```
-Among other things, it also allows embedding [plotly plots](https://plotly.com/) and [antigenic cartography maps](https://www.antigenic-cartography.org/) to your report. See the [example_report.py](https://github.com/iAvicenna/PyReports/blob/main/test/examples/example_report.py) for a much extended example.
+Among other things, it also allows embedding [plotly plots](https://plotly.com/) and [antigenic cartography maps](https://www.antigenic-cartography.org/) to your report. See the [example_report.py](https://github.com/iAvicenna/PyReports/blob/main/test/examples/example_report.py) for a much extended example 
+and [test_report](https://github.com/iAvicenna/PyReports/blob/main/test/test_report.html) for the end result.
