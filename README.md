@@ -3,7 +3,7 @@ PyReports is a python library that allows typing up pdf reports easily and quick
 It is done via a context managing. A simple example is 
 
 ```
-from PyReports import Section, Report, Txt, Img, Plt
+from PyReports import Section, Report, Txt, Img, Plt, Cde
 
 report = Report('Test Report')  
 
