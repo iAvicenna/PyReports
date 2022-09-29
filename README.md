@@ -24,11 +24,9 @@ with report:
     with Grid(2, 1, item_titles=['Image1', 'Image2']):
       Img('./image1.png')
       Img('./image2.png')
-    Txt('''
-        As with plots, the image will be embedded into the html
-        ''')
       
     Txt('''
+        As with plots, the image will be embedded into the html.
         One can also put a latex formula using regular tex code:
 
         $\int exp^{-x^2} dx = ?? $
