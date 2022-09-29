@@ -3,7 +3,7 @@ PyReports is a python library that allows typing up pdf reports easily and quick
 It is done via a context managing. A simple example is 
 
 ```python
-from PyReports import Section, Report, Txt, Img, Plt, Cde
+from PyReports import Section, Report, Txt, Img, Plt, Cde, Grid
 
 report = Report('Test Report')  
 
@@ -17,8 +17,8 @@ with report:
     Plt('./plotly_graph.html')
     
     with Grid(2,1):
-      Img('./image1.png)
-      Img('./image2.png)
+      Img('./image1.png')
+      Img('./image2.png')
       
     Txt('''
         One can also put a latex formula using regular tex code
