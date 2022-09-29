@@ -25,6 +25,14 @@ with report:
 
         $\int exp^{-x^2} dx = ?? $
         ''')
+        
+    with Section('Results Subsection'):
+      Txt('''
+          Subsections are created in the same way as sections:
+          using the context manager within the main section
+          as you used context manager to create section in reports.
+          ''')
+    
     
     
   with Section('Resources'):
