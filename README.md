@@ -15,10 +15,18 @@ with report:
     
   with Section('Results', has_tex=True):
     Plt('./plotly_graph.html')
+    Txt('''
+        The plot along with necessary javascripts
+        is embedded to the html report so it will
+        be a standalone report
+        ''')
     
     with Grid(2, 1, item_titles=['Image1', 'Image2']):
       Img('./image1.png')
       Img('./image2.png')
+    Txt('''
+        As with plots, the image will be embedded into the html
+        ''')
       
     Txt('''
         One can also put a latex formula using regular tex code:
