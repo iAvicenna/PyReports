@@ -21,9 +21,11 @@ with report:
       Img('./image2.png')
       
     Txt('''
-        One can also put a latex formula using regular tex code
+        One can also put a latex formula using regular tex code:
 
         $\int exp^{-x^2} dx = ?? $
+        
+        Once has_tex is set to True, necessary javascripts will be added to the report`s head.
         ''')
         
     with Section('Results Subsection'):
