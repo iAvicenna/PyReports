@@ -901,7 +901,7 @@ class Tab(_Container):
 
             tab_html += indent + f'<div id="{item_ids[i]}" {display_style} class="tabcontent" name="{tab_name}">\n'
             tab_html += '    ' + indent + '<span onclick="this.parentElement.style.display=\'none\'" class="topright">x</span>\n'
-            tab_html += self._children[i]._generate_html()[1:]
+            tab_html += self._children[i]._generate_html()
 
             tab_html += indent + '</div>\n' 
       
@@ -991,7 +991,7 @@ class Fold(_Container):
         fold_html += '    '*2 + indent + '<div class="foldcontent">\n'
 
         for i in range(len(self._children)):
-            fold_html += self._children[i]._generate_html()[1:]
+            fold_html += self._children[i]._generate_html()
 
         fold_html += '    '*2 + indent + f'</div>{self._end}\n' 
       
@@ -1022,7 +1022,7 @@ class Grid(objects._Context,objects._Node):
         if item_titles is not None:
             if isinstance(item_titles,str):
                 item_titles = [item_titles]
-            assert len(item_titles) == ncols*nrows, f'number of items is {ncols*nrows} but {item_titles} are supplied as titles.'
+            assert len(item_titles) == ncols*nrows, f'nrows*ncols is {ncols*nrows} but {item_titles} are supplied as titles.'
         
         if grid_style is None:
             grid_style = ''
