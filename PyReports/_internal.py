@@ -90,7 +90,6 @@ def format_text(text, parent_depth, leading_space="&nbsp;", is_code=False,
         line_char = ''
 
     text_split = split_by_text_newspace(text)
-    
     indel_lengths = [len(text_part)-len(text_part.lstrip()) for text_part
                  in text_split if not all(x in ' ' for x in text_part) and text_part != '']
     
@@ -99,12 +98,13 @@ def format_text(text, parent_depth, leading_space="&nbsp;", is_code=False,
     else:
         min_indel = min(indel_lengths)
                 
-    text_split = [part[min_indel:] if part != '' else ''
-                  for part in text_split]
-    
+    text_split = [part[min_indel:] if any(x not in ['',' '] for x in part[min_indel:])
+                  else '' for part in text_split]
     text_split = [replace_leading_spaces(part, char=leading_space) 
                   for part in text_split]
-    
+    text_split = [part + '<br>' if _is_item(part) else part for
+                  part in text_split]
+
     if all(x == ' ' for x in text_split[-1]):
         text_split = text_split[:-1]
         
@@ -117,6 +117,9 @@ def format_text(text, parent_depth, leading_space="&nbsp;", is_code=False,
 
 
 def split_by_text_newspace(text):
+    '''
+    split text by newspace which are not inside quotes. 
+    '''
     
     open_quotes = []
     new_space_positions = [-1]
@@ -155,3 +158,19 @@ def split_by_text_newspace(text):
         
     return split_text
         
+        
+def _is_item(part):
+    
+    if len(part)==0:
+        return False
+    elif part[0]=='-':
+        return True
+    elif _re.search('^\d+(.|-)',part) is not None:
+        return True
+    else: return False
+    
+    
+        
+        
+    
+    

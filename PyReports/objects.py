@@ -482,7 +482,7 @@ class Text(_Node):
     """
 
     def __init__(self, text, parent=None, font_size=16, alignment='left', end='',
-                 style='', formatted=False, raw=False):
+                 style='', formatted=False):
         
             
         pr.objects._Node.__init__(self, parent)
@@ -499,7 +499,6 @@ class Text(_Node):
         self._end = end
         self._style = style
         self._formatted = formatted
-        self._raw = raw
         
     def _format_text(self, text): 
         
@@ -515,18 +514,15 @@ class Text(_Node):
         parent_depth = self._parent._depth      
         text = self._text
         style = self._style
-        
-        if not self._raw:
-            tags = [f'<p style = "font-size:{str(self._font_size)}px; text-align:{self._alignment}; {style}">','</p>']
-            endline = '\n'
-        else:
-            tags = ['<pre style = "font-size:{str(self._font_size)}px; text-align:{self._alignment}; {style}">','</pre>']
-            endline = ''
+       
+        tags = [f'<p style = "font-size:{str(self._font_size)}px; text-align:{self._alignment}; {style}">','</p>']
+        endline = '\n'
         
         text = self._format_text(text)
         text_html = endline + '    '*(parent_depth + 1) + f'{tags[0]}' + endline
         text_html += f'{text}' + endline
         text_html += '    '*(parent_depth + 1) +f'{tags[1]}' + self._end + endline
+     
         return text_html
 
 
