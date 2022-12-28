@@ -102,8 +102,9 @@ def format_text(text, parent_depth, leading_space="&nbsp;", is_code=False,
                   else '' for part in text_split]
     text_split = [replace_leading_spaces(part, char=leading_space) 
                   for part in text_split]
-    text_split = [part + '<br>' if _is_item(part) else part for
-                  part in text_split]
+    text_split = [part + '<br>' if _is_item(part) and 
+                  (ind==len(text_split)-1 or _is_item(text_split[ind+1]))
+                  else part for ind,part in enumerate(text_split)]
 
     if all(x == ' ' for x in text_split[-1]):
         text_split = text_split[:-1]
@@ -161,11 +162,13 @@ def split_by_text_newspace(text):
         
 def _is_item(part):
     
+    part = part.strip('&nbsp;').strip()
+    
     if len(part)==0:
         return False
     elif part[0]=='-':
         return True
-    elif _re.search('^\d+(.|-)',part) is not None:
+    elif _re.search('^\d+(.|-)', part) is not None:
         return True
     else: return False
     

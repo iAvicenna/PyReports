@@ -70,17 +70,25 @@ with report:
         Txt('''
             When displaying text, newlines are not taken into account and long
             lines get wrapped (maximum of 100 px or 50% of device width which
-            can be changed via the configuration files (see section Styling Almost
+            can be changed via the configuration files, see section Styling Almost
             everything). Empty lines do appear as they are though. So to have an
-            empty line in your text, you do not needs to inser <br><br> manually.
+            empty line in your text, you do not needs to insert <br><br> manually.
             It will be done automatically such as the empty line that is 
             right below this sentence.
             
-            If you want the breakspaces to appear exactly where you put in the 
-            editor then you can add the option formatted = True as 
-            was done above. Dont try to mix formatted and unformatted text
-            in the same Text object results wont look good. In both cases, indents are managed automatically based on 
-            a graph that represents the parent child relations between containers. 
+            One can also itemize text by starting the line with -, 1-,2-, 1.,2.
+            etc such as:
+                
+            -item1
+            -item2
+                
+            or
+            
+                1-item1
+                2-item2
+                
+            Not that indents at the beginning of each line are managed automatically
+            relative to the text they are in. 
             
             Codes can be displayed using Cde object which has syntax highlighting
             and is automatically formatted to appear as it is on the editor.
