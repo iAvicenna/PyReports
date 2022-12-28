@@ -11,7 +11,7 @@ import _io
 import re as _re
 import matplotlib.pyplot as _plt
 import base64 as _b64
-
+from bs4 import BeautifulSoup as _bs
 
 def fig2img(fig: _plt.Figure):
     """Convert a Matplotlib figure to a PIL Image and return it"""
@@ -45,36 +45,28 @@ def file_to_base64(filepath:str):
 
 def html_tokenizer(html:str):
     
-    head_html = _re.search('<head.*</head>',html, flags=_re.DOTALL)
-    body_html = _re.search('<body.*</body>',html, flags=_re.DOTALL)
+    html_soup = _bs(html, 'html.parser')
     
+    head_html = str(html_soup.head)
+    body_html = str(html_soup.body)
     html_tokens = {}
     if head_html:
         html_tokens['head'] = []
-        head_html = head_html.group()
-        i0 = head_html.index('>')+1
-        i1 = len(head_html) - head_html[::-1].index('<')
-        head_html = head_html[i0:i1]
         
-        tokens = _re.findall('<[^><]*>[^><]*</[^><]*>|<link[^><]*>', head_html, flags=_re.DOTALL)
+        head_soup = _bs(head_html, 'html.parser')
         
-        for ind,token in enumerate(tokens):
-            i0 = len(token) - token[::-1].index('<')
-            i1 = len(token) - token[::-1].index('>')
-            html_tokens['head'].append(token)
+        for tag in ['script','link','style', 'div']:
+            html_tokens['head']+= [str(elem) for elem in head_soup.find_all(tag)]
 
-    if body_html:
-        body_html = body_html.group()
-        i0 = body_html.index('>')+1
-        i1 = len(body_html) - body_html[::-1].index('<')
-        body_html = body_html[i0:i1-1]
-        html_tokens['body'] = body_html
-        
+    html_tokens['body'] = body_html
+            
     return html_tokens
+
     
 def replace_leading_spaces(source, char="&nbsp;"):
     stripped = source.lstrip()
     return char * (len(source) - len(stripped)) + stripped
+
 
 def format_text(text, parent_depth, leading_space="&nbsp;", is_code=False,
                 formatted=False):
@@ -122,6 +114,7 @@ def format_text(text, parent_depth, leading_space="&nbsp;", is_code=False,
                       else total_indel + x + f'{end_char}' for x in text_split])
 
     return text
+
 
 def split_by_text_newspace(text):
     

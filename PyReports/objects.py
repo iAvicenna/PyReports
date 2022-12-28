@@ -390,7 +390,8 @@ class Link(_Node):
     Link object: It is a link.
     """
 
-    def __init__(self, link, link_title=None, parent=None, link_style = None, end='<br><br>'):
+    def __init__(self, link, link_title=None, parent=None, link_style = None, 
+                 end='<br><br>'):
 
         pr.objects._Node.__init__(self, parent) 
         
@@ -481,7 +482,7 @@ class Text(_Node):
     """
 
     def __init__(self, text, parent=None, font_size=16, alignment='left', end='',
-                 style='', formatted=False):
+                 style='', formatted=False, raw=False):
         
             
         pr.objects._Node.__init__(self, parent)
@@ -498,7 +499,7 @@ class Text(_Node):
         self._end = end
         self._style = style
         self._formatted = formatted
-       
+        self._raw = raw
         
     def _format_text(self, text): 
         
@@ -515,12 +516,17 @@ class Text(_Node):
         text = self._text
         style = self._style
         
-        tags = [f'<p style = "font-size:{str(self._font_size)}px; text-align:{self._alignment}; {style}">','</p>']
-      
+        if not self._raw:
+            tags = [f'<p style = "font-size:{str(self._font_size)}px; text-align:{self._alignment}; {style}">','</p>']
+            endline = '\n'
+        else:
+            tags = ['<pre style = "font-size:{str(self._font_size)}px; text-align:{self._alignment}; {style}">','</pre>']
+            endline = ''
+        
         text = self._format_text(text)
-        text_html = '\n' + '    '*(parent_depth + 1) + f'{tags[0]}\n'
-        text_html += f'{text}\n'
-        text_html += '    '*(parent_depth + 1) +f'{tags[1]}' + self._end + '\n'
+        text_html = endline + '    '*(parent_depth + 1) + f'{tags[0]}' + endline
+        text_html += f'{text}' + endline
+        text_html += '    '*(parent_depth + 1) +f'{tags[1]}' + self._end + endline
         return text_html
 
 
@@ -570,7 +576,6 @@ class AcMap(_Node):
         html_tokens = _internal.html_tokenizer(lines)
         
         body_html = html_tokens['body']
-        
         for token in html_tokens['head']:
             if '<meta' not in token and '<style' not in token and token not in self._root()._CONFIG['SCRIPTS']['USER SCRIPTS']:
                 self._root()._CONFIG['SCRIPTS']['USER SCRIPTS'] += '    ' + token.strip('\n') + '\n'
@@ -607,11 +612,14 @@ class Plot(_Node):
     seem to be a uniform way that this is encoded in plotly plots so it is not
     guaranteed to work correctly so it is better to do it during creating the 
     plotly plot itself.
+    
+    If you want to include the same plot twice in the same page, you should
+    change its id by setting change_id = True
 
     '''
     
     def __init__(self, plot, parent=None,  width=None, height=None, xscale=1, 
-                 yscale=1, end='<br>', change_id=True):
+                 yscale=1, end='<br>', change_id=False):
         
         pr.objects._Node.__init__(self, parent)
           
@@ -640,8 +648,9 @@ class Plot(_Node):
             # it will fail unless it is div-id is changed. This is what this part does.
             # However doing this for many non-identical plots might be slow 
             # and unneeded. So you can turn this off if needed.
-            
-            div_id = _re.search('<div id=".*"',html_tokens['body']).group().split('"')[1]
+                        
+            div_id = _re.search('(<div id=".*")|(<div class="plotly-graph-div" id="[^"]*")'
+                                ,html_tokens['body']).group().split('"')[-2]
             
             new_id = ''.join(_rand.choice(_str.ascii_uppercase + _str.ascii_lowercase + _str.digits) for _ in range(16))
             
@@ -669,7 +678,6 @@ class Plot(_Node):
             else:
                 height = int(self._yscale*num_dimensions[0])
         
-            print(f'{width},{height}')
             div_html = div_html.replace(f'"width":{dimensions[1]}',f'"width":{width}')
             div_html = div_html.replace(f'"height":{dimensions[0]}',f'"height":{height}')
          
@@ -735,7 +743,7 @@ class Image(_Node):
         
     def _generate_html(self):
 
-        img_html = ''
+        img_html = '<br>'
         parent_depth = self._parent._depth
 
         if isinstance(self._parent, pr.containers.Section):
