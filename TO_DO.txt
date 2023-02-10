@@ -1,0 +1,84 @@
+
+formatted vs raw, shouldnt raw be pre?
+
+Txt(f'<strong>{inde}</strong>- ' + experiment['name'] + '<br>')
+
+does not seem to add the br at the end
+
+the following does not display quite correctly
+
+Txt('''
+    1- Two groups of points are generated randomly (first group between
+       100-200 points and the second 50-150) within a grid of sides 10
+    
+    2- A noise is added to their distances with mean 0 and std 0.7.
+       These will be called the observed distances.
+       
+    3- Row and Column avidities are added with mean 0 and std 2.
+    
+    4- Coordinates are fitted to the distances including avidity parameters
+       in optimization.
+       
+    5- Coordinates are also fitted to the distances not including avidity
+       parameters in optimization.
+       
+    6- Comparison of fitted vs added avidities and observed vs
+       fitted distances are made.
+    
+    ''', formatted=True)
+    
+Txt('''
+    So in each column the given plots are the following:
+        
+    1- Fitted Row Avidities vs Added Row Avidities
+    
+    2- Fitted Column Avidities vs Added Column Avidities
+    
+    3- Error in Observed distance vs fitted distances (when avidity parameters
+       are included in optimziation). Red line indicates the expected
+       distribution given the noise in the observed distances
+       
+    4- Error in Observed distance vs fitted distances (when avidity parameters
+       are not included in optimziation). Red line indicates the expected
+       distribution given the noise in the observed distances
+        
+    ''', formatted=True)
+    
+    
+also shouldnt these display correctly when formatted=False, but they dont?
+
+
+In things like below the tabs at the beginning dont appear even in formatted
+
+with Section('Introduction'):
+        
+        Txt('''
+            In this page we look at the available Gates data in the Cambridge database
+            and give an overview.
+            ''')
+            
+        for experiment in experiments:
+            if all('gates' not in result['file'].lower() for result in experiment['results']):
+                continue
+            
+            Txt('<strong>Experiment:</strong> ' + experiment['name'])
+            Txt('<strong>Description:</strong> ' + experiment['description'])
+            Txt('')
+            
+            for indr,result in enumerate(experiment['results']):
+                file_path = result['file']
+                file_name = os.path.split(file_path)[-1]
+                file_names = file_names.union([file_name])
+                antigen_ids = result['antigen_ids']
+                serum_ids = result['serum_ids']
+                
+                antigen_names = [id_to_antigen[aid]['long'] for aid in antigen_ids]
+                serum_names = [id_to_serum[sid]['long'] for sid in serum_ids]
+                
+                Txt(f'    <strong>File {indr}:</strong> {file_path}', formatted=True)
+                Txt('    <strong>Antigens:</strong>', formatted=True)
+                [Txt(f'            {aname}', formatted=True) for aname in antigen_names]
+                Txt('    <strong>Sera:</strong>')
+                [Txt(f'            {sname}', formatted=True) for sname in serum_names]
+                
+            Txt('<br><br>')
