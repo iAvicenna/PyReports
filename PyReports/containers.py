@@ -1075,15 +1075,14 @@ class Grid(objects._Context,objects._Node):
             assert len(grid_item_styles) == nrows*ncols, 'grid_item_styles must have same number of elements as ncols*nrows'
 
 
-        self._fontstyle = f"<text style=\"font-size:{fontsize}px; font-weight:{fontweight};\">"
         self._end = end
         self._nrows = nrows
         self._ncols = ncols
         self._grid_style = grid_style
         self._grid_item_styles = grid_item_styles
         self._item_titles = item_titles
-
-
+        self._fontsize = fontsize
+        self._fontweight = fontweight
 
     def _generate_html(self):
 
@@ -1091,6 +1090,8 @@ class Grid(objects._Context,objects._Node):
         rows = 'auto '*self._nrows
         indent = '    '*(self._parent._depth + 1)
         grid_style = self._grid_style
+        fontstyle =  f"<text style=\"font-size:{self._fontsize}px; font-weight:{self._fontweight};\">"
+
 
         if len(self._children)>self._ncols*self._nrows:
             raise ValueError(f'{repr(self)} has {len(self._children)} children but nrows*ncols is {self._nrows*self._ncols}')
@@ -1114,7 +1115,7 @@ class Grid(objects._Context,objects._Node):
                     child_style += 'background-color: inherit;'
 
             if self._item_titles is not None:
-                child_html_str = self._fontstyle + self._item_titles[ind_child] + '</text>' + child_html_str
+                child_html_str = fontstyle + self._item_titles[ind_child] + '</text>' + child_html_str
 
             if isinstance(self._parent, Grid):
                 child_style += 'padding:0px;'
