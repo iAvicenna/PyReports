@@ -19,10 +19,10 @@ with report:
     with Section('Introduction'):
         Txt('''
             Welcome to PyReports. In PyReports two main categories are containers and objects. Containers are things that contain objects.
-            Objects are images, text, code etc things that you would want to put in your report. Containers could reports, sections, grids,
+            Objects are images, text, code etc things that you would want to put in your report. Containers could contain reports, sections, grids,
             folds etc. Both the containers and the objects derive from what is called a _Node giving the report a tree structure
             with well defined parent child relation between its containers and objects. The root of the report tree is the report container
-            itself where as its leaves will be the objects (objects cant contain other objects and therefore can not be parents to further
+            itself, its leaves being the objects (objects can't contain other objects and therefore can not be parents to further
             nodes). As you will see below, Nodes have context managers which allow to type reports easily without having to specify the
             parent and child relations explicitly. It will be guessed from context. So at the heart of report typing lies the _Context
             object in objects.py from which the _Node derives. Class methods and variables of _Context track the creation of containers
@@ -37,12 +37,12 @@ with report:
             ''')
         Txt('''
             with report('My Report'): # create a report
-                with Section('Introduction'): # create a section
-                    Txt('Hello world') # put a text in that section
+              with Section('Introduction'): # create a section
+                Txt('Hello world') # put a text in that section
 
-                    with Grid(2,1): # put a grid with 2 cols and 1 row in section
-                        Img(path1) # put an Img in the grid
-                        Img(path2) # put a second Img in the grid
+                with Grid(2,1): # put a grid with 2 cols and 1 row in section
+                  Img(path1) # put an Img in the grid
+                  Img(path2) # put a second Img in the grid
             ''', formatted=True)
         Txt(
             '''
@@ -51,19 +51,19 @@ with report:
 
             Section('Introduction', parent=report)
 
-            when needed. By the way there is a better way to display
-            code using Cde object:
+            when less nesting is preferred. By the way there is a better way to
+            display the code above using Cde object:
 
             ''')
 
         Cde('''
             with report('My Report'): # create a report
-                with Section('Introduction'): # create a section
-                    Txt('Hello world') # put a text in that section
+              with Section('Introduction'): # create a section
+                Txt('Hello world') # put a text in that section
 
-                    with Grid(2,1): # put a grid with 2 cols and 1 row in section
-                        Img(path1) # put an Img in the grid
-                        Img(path2) # put a second Img in the grid
+                with Grid(2,1): # put a grid with 2 cols and 1 row in section
+                    Img(path1) # put an Img in the grid
+                    Img(path2) # put a second Img in the grid
             ''')
 
 
@@ -94,7 +94,7 @@ with report:
             and is automatically formatted to appear as it is on the editor.
 
             By the way you can print what the report looks like using report.summary.
-            It will show the contets of the report up to the point of printing:
+            It will show the contets of the report as such:
             ''')
         Txt(report.summary(formatting='html'))
 
@@ -119,7 +119,7 @@ with report:
             to each grid element and we have done so below to make the layout more clear.
             ''')
 
-        with Grid(2,1, ['Part 1 of Grid 1', 'Part 2 of Grid2'], end=''):
+        with Grid(2,1, ['Part 1 of Grid 1', 'Part 2 of Grid1'], end=''):
             Img(f'{dir_path}/image1.jpeg',scale=1.3)
 
             with Grid(1,3, ['Part 1 of Grid2', 'Part 2 of Grid2', 'Part 3 of Grid2'], end=''):

@@ -1115,7 +1115,7 @@ class Grid(objects._Context,objects._Node):
                     child_style += 'background-color: inherit;'
 
             if self._item_titles is not None:
-                child_html_str = fontstyle + self._item_titles[ind_child] + '</text>' + child_html_str
+                child_html_str = fontstyle + self._item_titles[ind_child] + '</text><br>' + child_html_str
 
             if isinstance(self._parent, Grid):
                 child_style += 'padding:0px;'
