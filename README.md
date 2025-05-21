@@ -1,5 +1,5 @@
 # PyReports
-PyReports is a python library that allows typing up pdf reports easily and quickly.
+PyReports is a python library that allows typing up html reports easily and quickly.
 It is done via a context managing. A simple example is 
 
 ```python
