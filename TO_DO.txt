@@ -1,5 +1,14 @@
+- add to example something about tables
+- in Containers, _has and _items is quite convoluted and unnecessarily complex
+  something simpler!
+- can you move most of the formatting to beatiful soup I wonder? try its formatting
+first without changing anything and see what it does.
 
-formatted vs raw, shouldnt raw be pre?
+- currently it is not possible to put multiple objects into a single Tab without
+using something like Grid to contain them all. So maybe an object called Div
+could be useful
+
+- tab inside grid inside tab seems problematic
 
 Txt(f'<strong>{inde}</strong>- ' + experiment['name'] + '<br>')
 
@@ -10,75 +19,165 @@ the following does not display quite correctly
 Txt('''
     1- Two groups of points are generated randomly (first group between
        100-200 points and the second 50-150) within a grid of sides 10
-    
+
     2- A noise is added to their distances with mean 0 and std 0.7.
        These will be called the observed distances.
-       
+
     3- Row and Column avidities are added with mean 0 and std 2.
-    
+
     4- Coordinates are fitted to the distances including avidity parameters
        in optimization.
-       
+
     5- Coordinates are also fitted to the distances not including avidity
        parameters in optimization.
-       
+
     6- Comparison of fitted vs added avidities and observed vs
        fitted distances are made.
-    
+
     ''', formatted=True)
-    
+
 Txt('''
     So in each column the given plots are the following:
-        
+
     1- Fitted Row Avidities vs Added Row Avidities
-    
+
     2- Fitted Column Avidities vs Added Column Avidities
-    
+
     3- Error in Observed distance vs fitted distances (when avidity parameters
        are included in optimziation). Red line indicates the expected
        distribution given the noise in the observed distances
-       
+
     4- Error in Observed distance vs fitted distances (when avidity parameters
        are not included in optimziation). Red line indicates the expected
        distribution given the noise in the observed distances
-        
+
     ''', formatted=True)
-    
-    
+
+
 also shouldnt these display correctly when formatted=False, but they dont?
 
 
 In things like below the tabs at the beginning dont appear even in formatted
 
 with Section('Introduction'):
-        
+
         Txt('''
             In this page we look at the available Gates data in the Cambridge database
             and give an overview.
             ''')
-            
+
         for experiment in experiments:
             if all('gates' not in result['file'].lower() for result in experiment['results']):
                 continue
-            
+
             Txt('<strong>Experiment:</strong> ' + experiment['name'])
             Txt('<strong>Description:</strong> ' + experiment['description'])
             Txt('')
-            
+
             for indr,result in enumerate(experiment['results']):
                 file_path = result['file']
                 file_name = os.path.split(file_path)[-1]
                 file_names = file_names.union([file_name])
                 antigen_ids = result['antigen_ids']
                 serum_ids = result['serum_ids']
-                
+
                 antigen_names = [id_to_antigen[aid]['long'] for aid in antigen_ids]
                 serum_names = [id_to_serum[sid]['long'] for sid in serum_ids]
-                
+
                 Txt(f'    <strong>File {indr}:</strong> {file_path}', formatted=True)
                 Txt('    <strong>Antigens:</strong>', formatted=True)
                 [Txt(f'            {aname}', formatted=True) for aname in antigen_names]
                 Txt('    <strong>Sera:</strong>')
                 [Txt(f'            {sname}', formatted=True) for sname in serum_names]
                 
+                
+                
+Following does not work as intented
+
+#!/usr/bin/env python3
+# -*- coding: utf-8 -*-
+"""
+Created on Mon May 29 00:26:53 2023
+
+@author: avicenna
+"""
+
+import PyReports as pr
+import sys
+
+
+report = pr.from_template("lab", "Davids Map with Sequences")
+
+
+with pr.Section("Introduction", parent=report):
+
+  pr.Txt('''This David's map with sequences added. How the sequences are obtained is as follows:
+
+         - The main source file is the h5/data/H5.fasta in ACORG database
+         - This file usually contains multiple records for antigens. In most cases most of these records contain many undetermined aminoacids so those are dropped.
+         - From the remaining antigens there is usually only one antigen which matches in name and year details or if multiple they have identical sequences. It is not always True that the passage information exists in the ids of the sequences though. So one should keep that in  mind. Following list shows antigen names from the map on the left and to which record it was matched in the file above. Where there was a disambuguity it is noted next to the match.
+            ''')
+
+  pr.Txt('''
+               - 'A/GOOSE/GUANGDONG/1/1996 (0)':5547,
+               - 'A/VIETNAM/1194/2004-NIBRG-14 (1)':8943,
+               - 'A/VIETNAM/1203/2004-PR8 (1)':8953,
+               - 'A/CAMBODIA/X0810301/2013-IDCDC-RG34B (1)':5821,
+               - 'A/INDONESIA/05/2005-IBCDCRG-2 (2-1)': 9823,
+               - 'A/INDONESIA/CDC357/2006 (2-1)':7303,
+               - 'A/CHICKEN/INDONESIA/NC/2009-PR8 (2-1)':7904,
+               - 'A/CHICKEN/INDIA/NIV33487/2006-RG-7 (2-2)':7919,
+               - 'A/EGYPT/2321-NAMRU3/2007-IBCDCRG-11 (2-2)':2391,
+               - 'A/TURKEY/ENGLAND/250/2007 (2-2)':3846,
+               - 'A/EGYPT/N03072/2010-PR8-HY-RG-29 (2-2)':3306,
+               - 'A/ANHUI/1/2005-IBCDCRG-6 (2-3)':9494, #multiple results with differences: 7094
+               - 'A/ANHUI/1/2005 (2-3)':9494, #same as above?
+               - 'A/DUCK/HUNAN/182/2005 (2-3)':2432,
+               - 'A/CHICKEN/VIETNAM/TY101/2007-PR8 (2-3)':382, #no direct match took A/CHICKEN/VIETNAM/29/2007-H5N1-2007-XX-XX, this might be wrong since does not have T or Y at 101 or T anywhere near 101 but has Y at 98. None of the passage variants for this strain in the sequence records is different.
+               - 'A/BAR-HEADED-GOOSE/MONGOLIA/X53/2009 (2-3)':7436,
+               - 'A/DUCK/VIETNAM/NCVD-293/2009 (2-3)':8748,
+               - 'A/CHICKEN/VIETNAM/NCVD-279/2009 (2-3)':5274,
+               - 'A/HUBEI/1/2010-IBCDCRG-30 (2-3)':7979,
+               - 'A/BARN-SWALLOW/HONG-KONG/D10-1161/2010_SJ-003 (2-3)':6001,
+               - 'A/DUCK/VIETNAM/NCVD-432/2010 (2-3)':5622, #no match took 'A/DUCK/VIETNAM/NCVD-851/2011/2-3-2-1A'
+               - 'A/CHICKEN/BANGLADESH/11RS1984-30/2011-IDCDC-RG36 (2-3)':5052,
+               - 'A/DUCK/VIETNAM/NCVD-1584/2012 (2-3)':8438,
+               - 'A/DUCK/BANGLADESH/19097/2013_SJ007 (2-3)':4039,
+               - 'A/GUIZHOU/1/2013-IDCDC-RG35 (2-3)':4006, #2 matches with somehwat different sequences
+               - 'A/CHICKEN/VIETNAM/NCVD016/2008-RG-12 (7)':3529,
+               - 'NODE2':3047,
+               - 'A/TURKEY/TURKEY/1/2005-NIBRG-23 (2-2)':4382
+               ''')
+
+  pr.Txt('''
+          - These sequences are aligned using maffts (aligned sequences are given at the end).
+
+          - The MAFFTS aligned sequences is uncertain for TURKEY/TURKEY at 129. It can be either S- or -S since other sequences have many instances of S at both positions. MAFFTS does the latter but according to David Burke's page the correct one is the former so I manually change that.
+
+          - Once sequences are ready, when looking at a particular mutant I cross-check that the WT aa in the names for a given substitution matches with what is in the parent. In this regard, there is only two discrepancies. Below we see parent aa, position and name of mutant.
+        ''')
+  pr.Txt('''
+           - ('K', 113, 'A/EGYPT/N03072/2010-PR8-HY_HA_S113N/Q207K')
+           - ('X', 134, 'A/EGYPT/N03072/2010-PR8-HY_HA_V134A/T276A')
+           - ('X', 134, 'A/EGYPT/N03072/2010-PR8-HY_HA_V134A/L150P/K218N')
+           - ('X', 134, 'A/EGYPT/N03072/2010-PR8-HY_HA_N72S/V134A/K161N/P281Q')
+         ''')
+  pr.Txt('''
+         Note that 134 is given as X so it is undetermined so it is not a
+         discrepancy as much as it is missing information. With regards to
+         113, David Burke's page suggests K at 113 so it is possible mutant
+         name might be wrong.
+
+         ''')
+
+with pr.Section("Data", parent=report):
+
+  pr.Lnk("map_with_sequences.ace", "map with sequences")
+  pr.Lnk("aligned_seqs.fasta", "aligned sequences")
+
+report.to_html("main.html")
+
+                
+                
+
             Txt('<br><br>')

@@ -24,6 +24,7 @@ import ntpath as _ntp
 
 import PyReports as pr
 from . import _internal
+from pathlib import PosixPath
 
 _NoneType = type(None)
 cdir = _os.path.dirname(__file__)
@@ -305,7 +306,7 @@ class _Node():
         if not isinstance(args,list):args = [args]
         if not isinstance(expected_types,list):expected_types = [expected_types]
 
-        class_name = _re.search('\.[^\.\']+\'',str(type(self))).group()[1:-1]
+        class_name = _re.search(r'\.[^\.\']+\'',str(type(self))).group()[1:-1]
 
         for arg_name, arg, expected_type in zip(arg_names, args, expected_types):
             if not isinstance(arg, expected_type):
@@ -398,7 +399,8 @@ class Link(_Node):
         if link_title is None:
             link_title = _ntp.basename(link)
 
-        assert isinstance(link,str),f'link should be a string but is {type(link)}'
+        link = str(link)
+
         assert isinstance(link_title,str),f'link title should be a string but is {type(link_title)}'
         assert isinstance(end,str),f'end should be a string but is {type(end)}'
 
@@ -540,6 +542,52 @@ class Quote(Text):
         pr.objects._Node.__init__(self, grid)
 
 
+class PDF(_Node):
+
+  '''
+  Given an address for a pdf file, this will embed it inside the report.
+  '''
+
+  def __init__(self, pdf_path, parent=None, width=None, height=None,  end='<br>',
+               style=''):
+
+      pr.objects._Node.__init__(self, parent)
+      if width is not None: assert isinstance(width, int), f'width should be int but is {type(width)}'
+      if height is not None: assert isinstance(height, int), f'width should be int but is {type(width)}'
+
+      self._pdf_path = pdf_path
+      self._end = end
+      self._width = width
+      self._height = height
+      self._style = style
+
+  def _generate_html(self):
+
+      pdf_html = '<br>'
+      w = ""
+      h = ""
+      parent_depth = self._parent._depth
+
+      if isinstance(self._parent, pr.containers.Section):
+          indent = '    '*(parent_depth + 1)
+      else:
+          indent = '    '*(parent_depth)
+
+      if self._width is not None:
+        w = f"width=\"{self._width}\""
+      if self._height is not None:
+        h = f"height=\"{self._height}\""
+
+      pdf_html += '\n' + indent + f'<embed src="{self._pdf_path}" {w} {h} type="application/pdf" style="{self._style}">'
+
+
+      pdf_html +=  self._end + '\n'
+
+
+      return pdf_html
+
+
+
 class AcMap(_Node):
 
     '''
@@ -573,11 +621,11 @@ class AcMap(_Node):
 
         body_html = html_tokens['body']
         for token in html_tokens['head']:
-            if '<meta' not in token and '<style' not in token and token not in self._root()._CONFIG['SCRIPTS']['USER SCRIPTS']:
+            if  token not in self._root()._CONFIG['SCRIPTS']['USER SCRIPTS']:
                 self._root()._CONFIG['SCRIPTS']['USER SCRIPTS'] += '    ' + token.strip('\n') + '\n'
 
 
-        I = _re.search('style="width:\d*px;height:\d*px',body_html)
+        I = _re.search(r'style="width:\d*px;height:\d*px',body_html)
         i0,i1 = I.span()
         dimensions = [int(float(x.split(':')[1].replace('px',''))) for x in body_html[i0+7:i1].split(';')]
 
@@ -593,7 +641,7 @@ class AcMap(_Node):
 
         body_html = body_html.replace('"fill":true','"fill":false')
 
-        body_html = _re.sub('"browser":{"width":\d*,"height":\d*,',f'"browser":{{"width":{width},"height":{height},',body_html)
+        body_html = _re.sub(r'"browser":{"width":\d*,"height":\d*,',f'"browser":{{"width":{width},"height":{height},',body_html)
 
         return body_html + self._end +'\n'
 
@@ -645,7 +693,7 @@ class Plot(_Node):
             # However doing this for many non-identical plots might be slow
             # and unneeded. So you can turn this off if needed.
 
-            div_id = _re.search('(<div id=".*")|(<div class="plotly-graph-div" id="[^"]*")'
+            div_id = _re.search(r'(<div id=".*")|(<div class="plotly-graph-div" id="[^"]*")'
                                 ,html_tokens['body']).group().split('"')[-2]
 
             new_id = ''.join(_rand.choice(_str.ascii_uppercase + _str.ascii_lowercase + _str.digits) for _ in range(16))
@@ -659,8 +707,8 @@ class Plot(_Node):
         div_html = html_tokens['body'] + self._end + '\n'
 
         if self._height is not None or self._width is not None or self._xscale != 1 or self._yscale != 1:
-            I = _re.search('class="plotly-graph-div" style="height:.*px; width:.*px;',html_tokens['body']).group()
-            I = _re.search('height:.*px; width:.*px',I).group()
+            I = _re.search(r'class="plotly-graph-div" style="height:.*px; width:.*px;',html_tokens['body']).group()
+            I = _re.search(r'height:.*px; width:.*px',I).group()
             dimensions = [x.split(':')[1].replace('px','') for x in I.split(';')]
             num_dimensions = [float(x) for x in dimensions]
 
@@ -698,20 +746,27 @@ class Image(_Node):
     def __init__(self, image, parent=None, width=None, height=None, title=None, scale=1,
                  embed=True, style=None, end='<br>'):
 
-
         pr.objects._Node.__init__(self, parent)
 
         if width is not None and height is not None:
             assert  width>0 and height>0,f'Width and height should be positive but they are {width} and {height}'
         else:
-            if isinstance(image,str):
-                pimage = _PIL.Image.open(image)
+            if isinstance(image,(str,PosixPath)):
+                with open(str(image), "rb") as fp:
+                  pimage = _PIL.Image.open(fp)
+
                 width, height = pimage.size
             elif image is None:
-                pimage = _PIL.Image.new('RGB', (0,0))
+                if width is None:
+                    width = 0
+                if height is None:
+                    height = 0
+                pimage = _PIL.Image.new('RGB', (width,height))
                 width, height = pimage.size
             elif isinstance(image, _mpl.figure.Figure):
                 width, height = image.get_size_inches()*image.dpi
+            elif isinstance(image, _PIL.Image.Image):
+                width, height = image.size
             else:
                 raise ValueError(f'image should be str or mpl figure but is {type(image)}')
 
@@ -755,8 +810,8 @@ class Image(_Node):
 
         if self._embed:
 
-            if isinstance(self._image, str):
-                with open(self._image, 'rb') as fp:
+            if isinstance(self._image, (str,PosixPath)):
+                with open(str(self._image), 'rb') as fp:
                     img_bytes = fp.read()
 
                 if self._width is None and self._height is None:
@@ -768,6 +823,9 @@ class Image(_Node):
 
                 if self._width is None and self._height is None:
                     width, height = self._image.get_size_inches()*self._image.dpi
+            elif isinstance(self._image, _PIL.Image.Image):
+                img = self._image
+                img_bytes = _internal.image_to_byte_array(img)
             elif self._image is None:
                 img_bytes = b''
             else:
@@ -783,4 +841,115 @@ class Image(_Node):
 
         img_html +=  self._end + '\n'
 
+
         return img_html
+
+
+class Table(_Node):
+    """
+    """
+    def __init__(self, table, background_colors=None, parent=None,
+                 header_style=None, row_style=None, cell_colors=None):
+
+        pr.objects._Node.__init__(self, parent)
+
+        if header_style is None:
+          header_style = ''
+        if row_style is None:
+          row_style = ''
+        if background_colors is None:
+          background_colors = [None for _ in range(table.shape[0])]
+        else:
+          if len(background_colors) != table.shape[0]:
+            raise ValueError('length of background colors should be equal to '
+                             'number of rows of the table')
+        if cell_colors is None:
+          cell_colors = [[None for _ in range(table.shape[1])]
+                         for _ in range(table.shape[0])]
+        else:
+          if (len(cell_colors) != table.shape[0] or not
+              all(len(x)==table.shape[1] for x in cell_colors)):
+            raise ValueError('cell_colors must be a list of length equal to '
+                             'number of rows of the table and each element of the '
+                             'list must also be a list of length equal to number '
+                             'of columns of the table'
+                             )
+
+        self._table = table
+        self._background_colors = background_colors
+        self._row_style = row_style
+        self._header_style = header_style
+        self._cell_colors = cell_colors
+
+    def _generate_html(self):
+
+        table_html = '\n'
+        parent_depth = self._parent._depth
+
+        if isinstance(self._parent, pr.containers.Section):
+            indent = '    '*(parent_depth + 1)
+        else:
+            indent = '    '*(parent_depth)
+
+        table_html += indent + '<table class="sortable">\n\n'
+        table_html += '\n'.join([indent + '  ' + x for x in self._generate_colnames_html(self._table.columns, self._header_style).split('\n')]) + '\n\n'
+        table_html += indent + '  <tbody>\n'
+
+        for bcolor,ccolors, row in zip(self._background_colors,
+                                      self._cell_colors,
+                                      self._table.iterrows()):
+          row_style = self._row_style
+          cell_styles = []
+
+          if bcolor is not None:
+              row_style += f'background-color:{bcolor}'
+
+          cell_styles = [f'background-color:{ccolor}' if ccolor is not None
+                         else '' for ccolor in ccolors]
+
+          table_html += '\n'.join([indent + '  ' + x for x in self._generate_row_html(row[1], row_style, cell_styles).split('\n')]) + '\n'
+
+        table_html += indent + '  </tbody>\n\n'
+
+        table_html += indent + '</table>'
+
+        return table_html
+
+    def _generate_colnames_html(self, col_names, style=''):
+
+        colnames_html = f'<thead>\n  <tr style="{style}">\n'
+
+        for elem,td_class in zip(col_names, self._classes):
+          if 'num' in td_class:
+            just = '"text-align:right;"'
+          else:
+            just = '"text-align:left;"'
+
+          colnames_html += f'    <th {td_class}><button style={just}>{elem}<span aria-hidden="true"></span></button></th>\n'
+
+        colnames_html += '  </tr>\n</thead>'
+
+        return colnames_html
+
+
+    def _generate_row_html(self, row, row_style, cell_styles):
+
+        row_html = f'  <tr style="{row_style}">\n'
+
+        for elem,cell_style,td_class in zip(row, cell_styles, self._classes):
+
+          row_html += f'   <td {td_class}style="{cell_style}">{elem}</td>\n'
+
+        row_html += '  </tr>'
+
+        return row_html
+
+    @property
+    def _classes(self):
+
+        classes = []
+        for i in range(self._table.shape[1]):
+            col_vals = self._table.iloc[:,i]
+            classes.append(_internal._class(col_vals))
+
+        return classes

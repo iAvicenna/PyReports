@@ -1,5 +1,6 @@
 # Project related
 PyReports/templates/lab.json
+PyReports/templates/create_lab_template.py
 
 # Byte-compiled / optimized / DLL files
 __pycache__/
