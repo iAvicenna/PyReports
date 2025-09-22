@@ -824,8 +824,9 @@ class Image(_Node):
                 img = _internal.fig2img(self._image)
                 img_bytes = _internal.image_to_byte_array(img)
 
-                if self._width is None and self._height is None:
-                    width, height = self._image.get_size_inches()*self._image.dpi
+
+                # if self._width is None and self._height is None:
+                #     width, height = self._image.get_size_inches()*self._image.dpi
             elif isinstance(self._image, _PIL.Image.Image):
                 img = self._image
                 img_bytes = _internal.image_to_byte_array(img)

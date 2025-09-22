@@ -10,7 +10,6 @@ import _io
 import re as _re
 import matplotlib.pyplot as _plt
 import base64 as _b64
-import numpy as _np
 from bs4 import BeautifulSoup as _bs
 from  numbers import Number
 
@@ -18,7 +17,7 @@ from  numbers import Number
 def fig2img(fig: _plt.Figure):
     """Convert a Matplotlib figure to a PIL Image and return it"""
     buf = _io.BytesIO()
-    fig.savefig(buf, bbox_inches="tight")
+    fig.savefig(buf)
     buf.seek(0)
     img = _PIL.Image.open(buf)
     return img
