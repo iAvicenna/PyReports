@@ -959,13 +959,13 @@ class Fold(_Container):
 
     '''
 
-    def __init__(self, collapsible_style=None, button_style=None, content_style=None,
+    def __init__(self, fold_style=None, button_style=None, content_style=None,
                  end='<br><br>', parent=None):
 
         _Container.__init__(self, parent)
 
         self._end = end
-        self._collapsible_style = collapsible_style
+        self._fold_style = fold_style
         self._button_style = button_style
         self._content_style = content_style
 
@@ -992,21 +992,18 @@ class Fold(_Container):
     @property
     def _styles(self):
 
-        if self._collapsible_style is None:
-            collapsible_style = ''
+        if self._fold_style is None:
+            fold_style = ''
         else:
-            collapsible_style = f' style="{self._tab_style}"'
+            fold_style = f' style="{self._fold_style}"'
 
         if self._button_style is None:
             button_style = ''
         else:
-            if not isinstance(self._button_style, list):
-                button_style = self._button_style
-            else:
-                button_style = self._button_style
+            button_style = self._button_style
 
 
-        return collapsible_style, button_style
+        return fold_style, button_style
 
 
     @property
@@ -1016,7 +1013,7 @@ class Fold(_Container):
 
     def _generate_html(self):
 
-        tab_style, button_style = self._styles
+        fold_style, button_style = self._styles
 
         fold_html = ''
         indent = '    '*(self._parent._depth + 1)
@@ -1027,7 +1024,7 @@ class Fold(_Container):
 
         fold_html += '    ' + indent + f'<button type="button" style="{button_style}" class="fold" onclick="click_fold(this)"></button>\n'
 
-        fold_html += '    '*2 + indent + '<div class="foldcontent">\n'
+        fold_html += '    '*2 + indent + f'<div class="foldcontent" {fold_style}>\n'
 
         for i in range(len(self._children)):
             fold_html += self._children[i]._generate_html()

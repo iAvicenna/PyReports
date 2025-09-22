@@ -18,7 +18,7 @@ from  numbers import Number
 def fig2img(fig: _plt.Figure):
     """Convert a Matplotlib figure to a PIL Image and return it"""
     buf = _io.BytesIO()
-    fig.savefig(buf)
+    fig.savefig(buf, bbox_inches="tight")
     buf.seek(0)
     img = _PIL.Image.open(buf)
     return img

@@ -707,9 +707,12 @@ class Plot(_Node):
         div_html = html_tokens['body'] + self._end + '\n'
 
         if self._height is not None or self._width is not None or self._xscale != 1 or self._yscale != 1:
-            I = _re.search(r'class="plotly-graph-div" style="height:.*px; width:.*px;',html_tokens['body']).group()
-            I = _re.search(r'height:.*px; width:.*px',I).group()
-            dimensions = [x.split(':')[1].replace('px','') for x in I.split(';')]
+
+            pattern = r'<div\s+class="plotly-graph-div"(?:\s+id="[^"]*")?\s+style="(height:\d+px;\s*width:\d+px;?)"\s*>'
+
+            I = _re.search(pattern, html_tokens['body']).group(1).strip()
+            dimensions = [x.split(':')[1].replace('px','') for x in I.split(';')
+                          if len(x)>0]
             num_dimensions = [float(x) for x in dimensions]
 
             if self._width is not None:
